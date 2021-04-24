@@ -1,12 +1,17 @@
 package com.example.mobileav01
 
 import android.app.Activity
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.new_toolbar.*
 
 class MainActivity : AppCompatActivity(), FruitAdapter.OnItemClickListener {
 
@@ -23,15 +28,14 @@ class MainActivity : AppCompatActivity(), FruitAdapter.OnItemClickListener {
 
     private var fruitList = generateList(3)
     private var adapter = FruitAdapter(fruitList, this)
+    private var selectedFilter = "all"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        new_toolbar.title = getString(R.string.main_activity_title)
 
-        if (savedInstanceState != null) {
-            fruitList = savedInstanceState.getParcelableArrayList<Fruit>(MAIN_ACTIVITY_FRUIT_LIST_KEY) as ArrayList<Fruit>
-            adapter = FruitAdapter(fruitList, this)
-        }
+
         fruit_recycler_view.adapter = adapter
         fruit_recycler_view.layoutManager = LinearLayoutManager(this)
         fruit_recycler_view.setHasFixedSize(true)
@@ -39,6 +43,33 @@ class MainActivity : AppCompatActivity(), FruitAdapter.OnItemClickListener {
         fab.setOnClickListener(){
             val fruitIntent = Intent(this, AddFruit::class.java)
             startActivityForResult(fruitIntent, MAIN_ACTIVITY_FRUIT_EXTRA_CODE)
+        }
+
+        val optionsCode = booleanArrayOf(false,false,false)
+        val options = arrayOf("Frutas com mesmo nome","Ordem de inserção","Ordem alfabética")
+        val fruitDialog = AlertDialog.Builder(this)
+                .setTitle("Escolha os filtros abaixo")
+                .setMultiChoiceItems(options, optionsCode){_: DialogInterface?, i: Int, isChecked: Boolean ->
+                    if(isChecked){
+                        optionsCode[i] = true
+                        Toast.makeText(this, "Opção ${options[i]} marcada", Toast.LENGTH_SHORT).show()
+                    }else{
+                        optionsCode[i] = false
+                        Toast.makeText(this, "Opção ${options[i]} desmarcada", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                .setPositiveButton("Ok"){_, _ ->
+                    filterList(optionsCode)
+                    Toast.makeText(this, "As alterações foram aplicadas", Toast.LENGTH_SHORT).show()
+                }
+                .setNegativeButton("Voltar") { _, _ ->
+                    Toast.makeText(this, "Não houve nenhuma alteração", Toast.LENGTH_SHORT).show()
+                }.create()
+
+
+        filter_fruit.setOnClickListener {
+//           openDialog()
+            fruitDialog.show()
         }
     }
 
@@ -65,11 +96,67 @@ class MainActivity : AppCompatActivity(), FruitAdapter.OnItemClickListener {
 
     }
 
+//    private fun openDialog(){
+//        val choice = booleanArrayOf(false,false,false)
+//        val options = arrayOf("Frutas com mesmo nome","Ordem de inserção","Ordem alfabética")
+//        val fruitDialog = AlertDialog.Builder(this)
+//                .setTitle("Escolha os filtros abaixo")
+//                .setMultiChoiceItems(options, choice){_: DialogInterface?, i: Int, isChecked: Boolean ->
+//                    if(isChecked){
+//                        choice[i] = true
+//                        Toast.makeText(this, "Opção ${options[i]} marcada", Toast.LENGTH_SHORT).show()
+//                    }else{
+//                        choice[i] = false
+//                        Toast.makeText(this, "Opção ${options[i]} desmarcada", Toast.LENGTH_SHORT).show()
+//                    }
+//                }
+//                .setPositiveButton("Ok"){_, _ ->
+//                    filterList(choice)
+//                    Toast.makeText(this, "As alterações foram aplicadas", Toast.LENGTH_SHORT).show()
+//                }
+//                .setNegativeButton("Voltar") { _, _ ->
+//                    Toast.makeText(this, "Não houve nenhuma alteração", Toast.LENGTH_SHORT).show()
+//                }.create()
+//
+//        fruitDialog.show()
+//    }
+
+    private fun filterList(optionsCode: BooleanArray){
+        if(optionsCode[0]){
+            val newFruitList = fruitList.distinctBy { it.fruitName } as ArrayList<Fruit>
+            Log.i("INFO", newFruitList.toString())
+            adapter = FruitAdapter(newFruitList, this)
+            fruit_recycler_view.swapAdapter(adapter, true)
+        }else
+        {
+            adapter = FruitAdapter(fruitList, this)
+            fruit_recycler_view.swapAdapter(adapter, true)
+        }
+
+        if(optionsCode[1])
+        {
+            val invertFruitList = fruitList.reversed() as ArrayList<Fruit>
+            adapter = FruitAdapter(invertFruitList, this)
+            fruit_recycler_view.swapAdapter(adapter, true)
+        }else
+        {
+            adapter = FruitAdapter(fruitList, this)
+            fruit_recycler_view.swapAdapter(adapter, true)
+        }
+
+        if(optionsCode[2])
+        {
+            fruitList.sortBy { it.fruitName }
+            adapter.notifyDataSetChanged()
+        }
+
+    }
 
     private fun insertItem(view: View?, fruit: Fruit){
         val index = 0
         fruitList.add(index, fruit)
         adapter.notifyItemInserted(index)
+        fruit_recycler_view.scrollToPosition(0)
     }
 
     private fun deleteItem(view: View?, position: Int){
@@ -87,15 +174,12 @@ class MainActivity : AppCompatActivity(), FruitAdapter.OnItemClickListener {
 
     private fun generateList(size: Int): ArrayList<Fruit> {
         val list = ArrayList<Fruit>()
-        for (i in 0 until size) {
+        for (i in (size-1) downTo  0) {
             val item = Fruit(null, "Exemplo $i", "Benefícios")
+            val item1 = Fruit(null, "Exemplo $i", "Benefícios")
             list += item
+            list += item1
         }
         return list
-    }
-
-    override fun onSaveInstanceState(savedInstanceState: Bundle) {
-        super.onSaveInstanceState(savedInstanceState)
-        savedInstanceState.putParcelableArrayList(MAIN_ACTIVITY_FRUIT_LIST_KEY, fruitList)
     }
 }

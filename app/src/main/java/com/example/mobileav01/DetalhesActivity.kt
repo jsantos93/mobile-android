@@ -4,11 +4,13 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_detalhes.*
+import kotlinx.android.synthetic.main.new_toolbar.*
 
 class DetalhesActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detalhes)
+
 
         val position = intent.getIntExtra(MainActivity.MAIN_ACTIVITY_FRUIT_DETAIL_POSITION,0)
         val fruit = intent.getParcelableExtra<Fruit?>(MainActivity.MAIN_ACTIVITY_FRUIT_DETAIL_PARCELABLE)
@@ -21,6 +23,9 @@ class DetalhesActivity : AppCompatActivity() {
             imageView.setImageResource(R.drawable.ic_image)
         }
 
+        new_toolbar.title = fruit?.fruitName
+        setSupportActionBar(findViewById(R.id.new_toolbar))
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
 
         deleteBtn.setOnClickListener {

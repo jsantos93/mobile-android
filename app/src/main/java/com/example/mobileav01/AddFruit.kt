@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import kotlinx.android.synthetic.main.activity_add_fruit.*
+import kotlinx.android.synthetic.main.new_toolbar.*
 
 class AddFruit : AppCompatActivity() {
     companion object{
@@ -17,10 +18,11 @@ class AddFruit : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_fruit)
-        if (savedInstanceState != null) {
-            imageUri = savedInstanceState.getParcelable(MAIN_ACTIVITY_IMAGE_URI_KEY)
-            imageView2.setImageURI(imageUri)
-        }
+
+        new_toolbar.title = getString(R.string.add_activity_title)
+
+        setSupportActionBar(findViewById(R.id.new_toolbar))
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         uploadBtn.setOnClickListener{
             val gallery = Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
@@ -48,10 +50,5 @@ class AddFruit : AppCompatActivity() {
             imageUri?.let { contentResolver.takePersistableUriPermission(it, takeFlags) }
             imageView2.setImageURI(imageUri)
         }
-    }
-
-    override fun onSaveInstanceState(savedInstanceState: Bundle) {
-        super.onSaveInstanceState(savedInstanceState)
-        savedInstanceState.putParcelable(MAIN_ACTIVITY_IMAGE_URI_KEY, imageUri)
     }
 }

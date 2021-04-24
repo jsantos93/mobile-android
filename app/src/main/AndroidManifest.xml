@@ -11,9 +11,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Mobileav01">
-        <activity android:name=".DetalhesActivity"></activity>
-        <activity android:name=".AddFruit" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".DetalhesActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:parentActivityName=".MainActivity"></activity>
+        <activity android:name=".AddFruit"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:parentActivityName=".MainActivity"/>
+        <activity android:name=".MainActivity"
+            android:launchMode="singleTask"
+            android:configChanges="keyboardHidden|orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
