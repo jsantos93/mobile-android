@@ -20,6 +20,9 @@ class FruitAdapter(private var fruitList: List<Fruit>, private var listener: OnI
     override fun onBindViewHolder(holder: FruitHolder, position: Int) {
         val currentItem = fruitList[position]
 
+        if(currentItem.intImg != null){
+            holder.imageView.setImageResource(currentItem.intImg!!)
+        }
         holder.imageView.setImageURI(currentItem.imageResource)
         holder.fruitTextView.text = currentItem.fruitName
         holder.benefitsTextView.text = currentItem.fruitBenefits

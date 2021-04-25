@@ -5,4 +5,4 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class Fruit(var imageResource: Uri?, var fruitName: String, var fruitBenefits: String):Parcelable
+data class Fruit(var intImg: Int? ,var imageResource: Uri?, var fruitName: String, var fruitBenefits: String):Parcelable

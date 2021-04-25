@@ -32,8 +32,13 @@ class AddFruit : AppCompatActivity() {
         concluirBtn.setOnClickListener{
             val i = Intent()
             val fruitName = editTextFruitName.text.toString()
-            val benefits = editTextTextMultiLine.text.toString()
-            val newFruit = Fruit(imageUri,fruitName, benefits)
+            var benefits = editTextTextMultiLine.text.toString()
+
+            if(benefits.isEmpty()){
+                benefits = "No Description"
+            }
+
+            val newFruit = Fruit(null,imageUri,fruitName, benefits)
             i.putExtra(MainActivity.MAIN_ACTIVITY_FRUIT_EXTRA_PARCELABLE, newFruit)
             setResult(Activity.RESULT_OK, i)
             finish()

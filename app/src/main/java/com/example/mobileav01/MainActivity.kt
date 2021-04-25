@@ -28,7 +28,6 @@ class MainActivity : AppCompatActivity(), FruitAdapter.OnItemClickListener {
 
     private var fruitList = generateList(3)
     private var adapter = FruitAdapter(fruitList, this)
-    private var selectedFilter = "all"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +45,7 @@ class MainActivity : AppCompatActivity(), FruitAdapter.OnItemClickListener {
         }
 
         val optionsCode = booleanArrayOf(false,false,false)
-        val options = arrayOf("Frutas com mesmo nome","Ordem de inserção","Ordem alfabética")
+        val options = arrayOf("Remover frutas duplicadas","Ordenar por inserção","Ordenar por ordem alfabética")
         val fruitDialog = AlertDialog.Builder(this)
                 .setTitle("Escolha os filtros abaixo")
                 .setMultiChoiceItems(options, optionsCode){_: DialogInterface?, i: Int, isChecked: Boolean ->
@@ -68,7 +67,6 @@ class MainActivity : AppCompatActivity(), FruitAdapter.OnItemClickListener {
 
 
         filter_fruit.setOnClickListener {
-//           openDialog()
             fruitDialog.show()
         }
     }
@@ -124,30 +122,30 @@ class MainActivity : AppCompatActivity(), FruitAdapter.OnItemClickListener {
     private fun filterList(optionsCode: BooleanArray){
         if(optionsCode[0]){
             val newFruitList = fruitList.distinctBy { it.fruitName } as ArrayList<Fruit>
-            Log.i("INFO", newFruitList.toString())
+//            Log.i("INFO", newFruitList.toString())
             adapter = FruitAdapter(newFruitList, this)
-            fruit_recycler_view.swapAdapter(adapter, true)
-        }else
-        {
-            adapter = FruitAdapter(fruitList, this)
             fruit_recycler_view.swapAdapter(adapter, true)
         }
 
-        if(optionsCode[1])
+        else if(optionsCode[1])
         {
             val invertFruitList = fruitList.reversed() as ArrayList<Fruit>
             adapter = FruitAdapter(invertFruitList, this)
             fruit_recycler_view.swapAdapter(adapter, true)
-        }else
+        }
+        else if(optionsCode[2])
         {
-            adapter = FruitAdapter(fruitList, this)
+
+            var sortedFruitList = fruitList
+            sortedFruitList.sortBy { it.fruitName }
+            adapter = FruitAdapter(sortedFruitList, this)
             fruit_recycler_view.swapAdapter(adapter, true)
         }
-
-        if(optionsCode[2])
+        else
         {
-            fruitList.sortBy { it.fruitName }
-            adapter.notifyDataSetChanged()
+            Log.i("INFO", fruitList.toString())
+            adapter = FruitAdapter(fruitList, this)
+            fruit_recycler_view.swapAdapter(adapter, true)
         }
 
     }
@@ -175,8 +173,8 @@ class MainActivity : AppCompatActivity(), FruitAdapter.OnItemClickListener {
     private fun generateList(size: Int): ArrayList<Fruit> {
         val list = ArrayList<Fruit>()
         for (i in (size-1) downTo  0) {
-            val item = Fruit(null, "Exemplo $i", "Benefícios")
-            val item1 = Fruit(null, "Exemplo $i", "Benefícios")
+            val item = Fruit(R.drawable.ic_bananas, null, "Banana $i", "Boa antes de praticar esportes")
+            val item1 = Fruit(R.drawable.ic_bananas, null, "Banana $i", "Boa antes de praticar esportes")
             list += item
             list += item1
         }
